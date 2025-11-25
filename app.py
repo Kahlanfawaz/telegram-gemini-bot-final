@@ -133,6 +133,11 @@ def index():
     """نقطة نهاية بسيطة للتحقق من حالة التطبيق."""
     return "Telegram Gemini Bot is running!", 200
 
+@app.route("/ping", methods=["GET"])
+def ping():
+    """نقطة نهاية تستخدم لمنع الخادم من الدخول في وضع السكون (Cold Start)."""
+    return "pong", 200
+
 @app.route(f"/{os.getenv('TELEGRAM_BOT_TOKEN')}", methods=["POST"])
 async def webhook_handler():
     """نقطة نهاية Webhook لمعالجة تحديثات تليجرام."""
