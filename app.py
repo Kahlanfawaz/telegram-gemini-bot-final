@@ -148,16 +148,22 @@ async def webhook_handler():
         init_application()
         
     if application is None:
+        # إذا فشلت التهيئة، أرسل رسالة خطأ
+        logger.error("Application failed to initialize. Check environment variables.")
         return jsonify({"status": "error", "message": "Application not initialized"}), 500
 
     if request.method == "POST":
-        # قراءة البيانات المرسلة من تليجرام
-        update = Update.de_json(request.get_json(force=True), application.bot)
-        
-        # معالجة التحديث
-        await application.process_update(update)
-        
-        return jsonify({"status": "ok"}), 200
+        try:
+            # قراءة البيانات المرسلة من تليجرام
+            update = Update.de_json(request.get_json(force=True), application.bot)
+            
+            # معالجة التحديث
+            await application.process_update(update)
+            
+            return jsonify({"status": "ok"}), 200
+        except Exception as e:
+            logger.error(f"Error processing update: {e}")
+            return jsonify({"status": "error", "message": f"Error processing update: {e}"}), 500
     return jsonify({"status": "error", "message": "Method not allowed"}), 405
 
 # 5. دالة رئيسية للتشغيل المحلي (اختياري)
